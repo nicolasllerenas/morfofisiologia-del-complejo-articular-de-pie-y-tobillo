@@ -2,7 +2,7 @@
 
 Hecho con cariño para mi chiwawita 💕 **Jeraldine Dione Rojas Vargas**, para que le sirva en su curso de Biomecánica de la UTEC.
 
-Es un visor 3D del pie y el tobillo, inspirado en el modelo del Manual MSD y armado a partir de la presentación del curso.
+Es un visor 3D del pie y el tobillo.
 
 ## Qué hay en la carpeta
 
