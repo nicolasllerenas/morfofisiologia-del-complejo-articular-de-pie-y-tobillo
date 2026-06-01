@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Morfofisiología del Complejo Articular de Pie y Tobillo — Modelo 3D Interactivo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --parchment: #d9c69c;
+  --parchment-deep: #b89a64;
+  --ink: #2a1c0a;
+  --ink-soft: #4a361b;
+  --accent: #7a4a1e;
+  --accent-glow: #d9853a;
+  --bone: #f0e3c8;
+  --nerve: #f3d24a;
+  --artery: #b1262b;
+  --ligament: #c9b3d9;
+  --tendon: #d6b27a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; font-family: 'Cormorant Garamond', serif; color: var(--ink); }
+body {
+  background: radial-gradient(ellipse at center, #1f1408 0%, #0a0604 100%);
+}
+#app { display: grid; grid-template-columns: 320px 1fr 340px; height: 100vh; }
+.panel {
+  background:
+    linear-gradient(180deg, rgba(217,198,156,0.97), rgba(184,154,100,0.97)),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='n'><feTurbulence baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.4  0 0 0 0 0.3  0 0 0 0 0.15  0 0 0 0.18 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  border: 1px solid #5a3e1c;
+  box-shadow: inset 0 0 80px rgba(90,60,20,0.4), 0 0 30px rgba(0,0,0,0.7);
+  overflow-y: auto;
+  padding: 18px 16px;
+  position: relative;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent) transparent;
+}
+.panel::-webkit-scrollbar { width: 8px; }
+.panel::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+.panel::before, .panel::after {
+  content: ''; position: absolute; left: 10px; right: 10px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--ink), transparent);
+}
+.panel::before { top: 6px; }
+.panel::after { bottom: 6px; }
+
+h1.title {
+  font-family: 'Cinzel', serif; font-size: 1.05rem; font-weight: 700;
+  text-align: center; letter-spacing: 1.5px; color: var(--ink);
+  padding: 4px 0 10px; margin-bottom: 6px; border-bottom: 1px double var(--ink-soft);
+}
+.subtitle {
+  font-style: italic; text-align: center; font-size: 0.88rem;
+  color: var(--ink-soft); margin-bottom: 16px;
+}
+h2.section {
+  font-family: 'Cinzel', serif; font-size: 0.78rem; letter-spacing: 2px;
+  margin: 16px 0 8px; color: var(--ink-soft); text-transform: uppercase;
+  border-left: 3px solid var(--accent); padding-left: 8px;
+}
+.muted { font-size: 0.92rem; color: var(--ink-soft); line-height: 1.55; }
+
+#viewer { position: relative; background: #06040a; border-left: 1px solid #5a3e1c; border-right: 1px solid #5a3e1c; }
+#canvas { width: 100%; height: 100%; display: block; cursor: grab; }
+#canvas:active { cursor: grabbing; }
+#labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+
+.toolbar {
+  position: absolute; top: 16px; left: 16px; display: flex; flex-direction: column; gap: 4px;
+  background: rgba(217,198,156,0.94); border: 1px solid #5a3e1c; border-radius: 4px; padding: 6px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+}
+.tool {
+  width: 36px; height: 36px; display: grid; place-items: center; cursor: pointer; border-radius: 3px;
+  background: transparent; border: none; color: var(--ink); font-size: 18px; font-family: serif;
+  transition: 0.15s;
+}
+.tool:hover { background: rgba(122,74,30,0.18); }
+.tool.active { background: rgba(122,74,30,0.32); }
+.tool svg { width: 18px; height: 18px; fill: currentColor; }
+
+.brand {
+  position: absolute; bottom: 12px; left: 16px;
+  font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 2px;
+  color: rgba(217,198,156,0.55); pointer-events: none;
+}
+
+.views {
+  position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 4px;
+  background: rgba(217,198,156,0.94); border: 1px solid #5a3e1c; border-radius: 4px; padding: 6px 8px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+}
+.view-btn {
+  font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 1.5px;
+  padding: 6px 10px; cursor: pointer; background: transparent;
+  border: 1px solid transparent; color: var(--ink); border-radius: 2px; transition: 0.15s;
+}
+.view-btn:hover { border-color: var(--accent); background: rgba(122,74,30,0.12); }
+
+.legend {
+  position: absolute; top: 16px; right: 16px;
+  background: rgba(217,198,156,0.94); border: 1px solid #5a3e1c; border-radius: 4px;
+  padding: 10px 14px; box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+  font-size: 0.82rem; min-width: 160px;
+}
+.legend h3 { font-family: 'Cinzel', serif; font-size: 0.72rem; letter-spacing: 1.5px; margin-bottom: 8px; color: var(--ink-soft); }
+.legend-row { display: flex; align-items: center; gap: 8px; padding: 2px 0; }
+.swatch { width: 13px; height: 13px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.4); flex-shrink: 0; }
+
+.layer { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px dotted rgba(74,54,27,0.4); }
+.layer label { font-size: 0.98rem; cursor: pointer; display: flex; align-items: center; gap: 8px; flex: 1; }
+.toggle {
+  appearance: none; width: 34px; height: 18px; background: #806747;
+  border-radius: 10px; position: relative; cursor: pointer; outline: none; transition: 0.15s;
+  flex-shrink: 0;
+}
+.toggle::after {
+  content: ''; position: absolute; top: 2px; left: 2px; width: 14px; height: 14px;
+  background: var(--parchment); border-radius: 50%; transition: 0.18s;
+}
+.toggle:checked { background: var(--accent); }
+.toggle:checked::after { left: 18px; }
+
+.region-tag {
+  display: inline-block; padding: 2px 10px; font-size: 0.72rem; letter-spacing: 1px;
+  color: var(--parchment); border-radius: 2px; text-transform: uppercase; font-weight: 600;
+  font-family: 'Cinzel', serif;
+}
+
+.struct-list { list-style: none; max-height: 240px; overflow-y: auto; border: 1px solid rgba(74,54,27,0.3); border-radius: 2px; }
+.struct-list::-webkit-scrollbar { width: 6px; }
+.struct-list::-webkit-scrollbar-thumb { background: var(--accent); }
+.struct-list li {
+  padding: 6px 10px; cursor: pointer; font-size: 0.93rem;
+  border-bottom: 1px dotted rgba(74,54,27,0.25);
+  transition: 0.12s;
+}
+.struct-list li:last-child { border-bottom: none; }
+.struct-list li:hover { background: rgba(122,74,30,0.15); }
+.struct-list li.active { background: rgba(122,74,30,0.32); font-weight: 600; color: var(--ink); }
+.struct-list li .ic { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
+
+#info .tag {
+  display: inline-block; font-size: 0.7rem; letter-spacing: 1.5px;
+  padding: 2px 8px; border: 1px solid var(--ink-soft); border-radius: 2px;
+  text-transform: uppercase; margin-bottom: 10px; background: rgba(122,74,30,0.1);
+}
+#info h3 { font-family: 'Cinzel', serif; font-size: 1.08rem; line-height: 1.3; margin-bottom: 4px; }
+#info .latin { font-style: italic; color: var(--accent); font-size: 0.95rem; margin-bottom: 12px; }
+#info .body { font-size: 0.98rem; line-height: 1.6; }
+#info .body p + p { margin-top: 8px; }
+#info .meta { margin-top: 14px; padding-top: 10px; border-top: 1px dotted rgba(74,54,27,0.4); font-size: 0.85rem; color: var(--ink-soft); }
+#info .meta strong { color: var(--ink); }
+
+.search {
+  width: 100%; padding: 8px 12px;
+  background: rgba(255,250,235,0.7); border: 1px solid var(--ink-soft); border-radius: 2px;
+  font-family: inherit; font-size: 0.95rem; color: var(--ink); margin-bottom: 8px;
+  outline: none; transition: 0.15s;
+}
+.search:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(122,74,30,0.18); }
+.search::placeholder { color: var(--ink-soft); font-style: italic; }
+
+.label3d {
+  position: absolute; pointer-events: auto; cursor: pointer;
+  background: rgba(18,12,4,0.88); color: #ecdcaa; padding: 4px 10px;
+  border-radius: 2px; font-size: 0.78rem; letter-spacing: 0.6px;
+  border: 1px solid #a88c5a; white-space: nowrap;
+  transform: translate(-50%, -130%);
+  font-family: 'Cormorant Garamond', serif;
+  transition: background 0.15s, transform 0.2s;
+}
+.label3d:hover { background: rgba(122,74,30,0.95); color: #fff5d6; }
+.label3d.kind-nerve { border-color: #d4b340; color: #f7e290; }
+.label3d.kind-artery { border-color: #c4514a; color: #f0b0ad; }
+.label3d.kind-ligament { border-color: #b29ec9; color: #e2d5ec; }
+.label3d::after {
+  content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+  border: 6px solid transparent; border-top-color: rgba(18,12,4,0.88);
+}
+
+.intro-card {
+  margin: 8px 0 14px; padding: 10px 12px;
+  background: rgba(122,74,30,0.10); border-left: 3px solid var(--accent);
+  font-size: 0.9rem; line-height: 1.5; color: var(--ink-soft);
+}
+.intro-card strong { color: var(--ink); }
+</style>
+</head>
+<body>
+<div id="app">
+  <aside class="panel" id="left">
+    <h1 class="title">Morfofisiología del<br/>Complejo Articular de Pie y Tobillo</h1>
+    <p class="subtitle">Modelo 3D Interactivo</p>
+
+    <div class="intro-card">
+      Sistema multiarticular de <strong>26 huesos</strong> y más de <strong>30 articulaciones</strong>, diseñado para alternar entre estructura flexible (adaptación al terreno) y palanca rígida (propulsión en marcha).
+    </div>
+
+    <h2 class="section">Capas</h2>
+    <div class="layer">
+      <label><span class="swatch" style="background:#f0e3c8"></span>Huesos</label>
+      <input type="checkbox" class="toggle" data-layer="bones" checked>
+    </div>
+    <div class="layer">
+      <label><span class="swatch" style="background:#c9b3d9"></span>Ligamentos</label>
+      <input type="checkbox" class="toggle" data-layer="ligaments" checked>
+    </div>
+    <div class="layer">
+      <label><span class="swatch" style="background:#b1262b"></span>Arterias</label>
+      <input type="checkbox" class="toggle" data-layer="arteries" checked>
+    </div>
+    <div class="layer">
+      <label><span class="swatch" style="background:#f3d24a"></span>Nervios</label>
+      <input type="checkbox" class="toggle" data-layer="nerves" checked>
+    </div>
+    <div class="layer">
+      <label><span class="swatch" style="background:#d6b27a"></span>Tendón / Fascia</label>
+      <input type="checkbox" class="toggle" data-layer="tendons" checked>
+    </div>
+    <div class="layer">
+      <label><span class="swatch" style="background:#ffffff;border-color:#aaa"></span>Etiquetas</label>
+      <input type="checkbox" class="toggle" data-layer="labels" checked>
+    </div>
+
+    <h2 class="section">División Funcional</h2>
+    <div class="layer">
+      <label><span class="region-tag" style="background:#a8553a">Retropié</span></label>
+      <input type="checkbox" class="toggle" data-region="rear" checked>
+    </div>
+    <div class="layer">
+      <label><span class="region-tag" style="background:#7a6a3a">Mediopié</span></label>
+      <input type="checkbox" class="toggle" data-region="mid" checked>
+    </div>
+    <div class="layer">
+      <label><span class="region-tag" style="background:#3a6a55">Antepié</span></label>
+      <input type="checkbox" class="toggle" data-region="fore" checked>
+    </div>
+
+    <h2 class="section">Búsqueda</h2>
+    <input class="search" id="search" placeholder="Buscar estructura…">
+    <ul class="struct-list" id="structList"></ul>
+  </aside>
+
+  <main id="viewer">
+    <canvas id="canvas"></canvas>
+    <div id="labels"></div>
+
+    <div class="toolbar">
+      <button class="tool active" data-mode="rotate" title="Rotar (clic + arrastrar)">⟳</button>
+      <button class="tool" data-mode="pan" title="Mover">✥</button>
+      <button class="tool" data-action="reset" title="Restablecer vista">⊙</button>
+      <button class="tool" data-action="explode" title="Expandir / Compactar">⤧</button>
+      <button class="tool" data-action="screenshot" title="Captura">◰</button>
+    </div>
+
+    <div class="legend">
+      <h3>Leyenda</h3>
+      <div class="legend-row"><span class="swatch" style="background:#f0e3c8"></span> Hueso</div>
+      <div class="legend-row"><span class="swatch" style="background:#c9b3d9"></span> Ligamento</div>
+      <div class="legend-row"><span class="swatch" style="background:#b1262b"></span> Arteria</div>
+      <div class="legend-row"><span class="swatch" style="background:#f3d24a"></span> Nervio</div>
+      <div class="legend-row"><span class="swatch" style="background:#d6b27a"></span> Tendón</div>
+    </div>
+
+    <div class="views">
+      <button class="view-btn" data-view="anterior">Anterior</button>
+      <button class="view-btn" data-view="posterior">Posterior</button>
+      <button class="view-btn" data-view="lateral">Lateral</button>
+      <button class="view-btn" data-view="medial">Medial</button>
+      <button class="view-btn" data-view="superior">Dorsal</button>
+      <button class="view-btn" data-view="plantar">Plantar</button>
+    </div>
+
+    <div class="brand">MANUAL ANATÓMICO · MODELO 3D</div>
+  </main>
+
+  <aside class="panel" id="right">
+    <h1 class="title">Información Anatómica</h1>
+    <div id="info">
+      <p class="muted">Selecciona una estructura del modelo o de la lista para ver su descripción morfofisiológica.</p>
+      <div class="intro-card" style="margin-top:14px">
+        <strong>Controles</strong><br/>
+        · Clic + arrastrar: rotar<br/>
+        · Rueda: zoom<br/>
+        · Clic derecho + arrastrar: mover<br/>
+        · Clic sobre una estructura: información
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const canvas = document.getElementById('canvas');
+const labelsLayer = document.getElementById('labels');
+const viewer = document.getElementById('viewer');
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x06040a);
+scene.fog = new THREE.Fog(0x06040a, 38, 95);
+
+const camera = new THREE.PerspectiveCamera(38, viewer.clientWidth / viewer.clientHeight, 0.1, 500);
+const DEFAULT_CAM = new THREE.Vector3(16, 9, 20);
+const DEFAULT_TARGET = new THREE.Vector3(1.2, 2.2, 1.2);
+camera.position.copy(DEFAULT_CAM);
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(viewer.clientWidth, viewer.clientHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.1;
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.07;
+controls.minDistance = 5;
+controls.maxDistance = 70;
+controls.target.copy(DEFAULT_TARGET);
+
+const key = new THREE.DirectionalLight(0xfff0d4, 1.15);
+key.position.set(12, 22, 14);
+key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048);
+key.shadow.camera.left = -18; key.shadow.camera.right = 18;
+key.shadow.camera.top = 18; key.shadow.camera.bottom = -18;
+key.shadow.bias = -0.0008;
+scene.add(key);
+
+const fill = new THREE.DirectionalLight(0x7090b8, 0.5);
+fill.position.set(-14, 7, -10);
+scene.add(fill);
+
+const rim = new THREE.DirectionalLight(0xffc080, 0.45);
+rim.position.set(2, 5, -18);
+scene.add(rim);
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.25));
+
+const groundGeom = new THREE.CircleGeometry(45, 64);
+const groundMat = new THREE.MeshStandardMaterial({ color: 0x0e0905, roughness: 0.96, metalness: 0 });
+const ground = new THREE.Mesh(groundGeom, groundMat);
+ground.rotation.x = -Math.PI/2;
+ground.position.y = -2.6;
+ground.receiveShadow = true;
+scene.add(ground);
+
+const boneMat = new THREE.MeshStandardMaterial({ color: 0xf0e3c8, roughness: 0.62, metalness: 0.04 });
+const ligamentMat = new THREE.MeshStandardMaterial({ color: 0xc9b3d9, roughness: 0.55, metalness: 0.0, transparent: true, opacity: 0.88 });
+const arteryMat = new THREE.MeshStandardMaterial({ color: 0xb1262b, roughness: 0.4, metalness: 0.06, emissive: 0x350808, emissiveIntensity: 0.22 });
+const nerveMat = new THREE.MeshStandardMaterial({ color: 0xf3d24a, roughness: 0.5, metalness: 0.05, emissive: 0x3a2c08, emissiveIntensity: 0.18 });
+const tendonMat = new THREE.MeshStandardMaterial({ color: 0xd6b27a, roughness: 0.7, metalness: 0.02 });
+
+const groups = {
+  bones: new THREE.Group(),
+  ligaments: new THREE.Group(),
+  arteries: new THREE.Group(),
+  nerves: new THREE.Group(),
+  tendons: new THREE.Group(),
+};
+Object.values(groups).forEach(g => scene.add(g));
+
+const STRUCTURES = [];
+const originalMats = new WeakMap();
+
+function registerStructure(mesh, data) {
+  mesh.userData = data;
+  STRUCTURES.push(Object.assign({ mesh }, data));
+  mesh.traverse(child => {
+    if (child.isMesh) {
+      child.userData.parentStructureName = data.name;
+      originalMats.set(child, child.material);
+    }
+  });
+}
+
+function ellipsoidBone(opts) {
+  const { name, latin, info, region, position, scale, rotation = [0,0,0], material = boneMat, layer = 'bones', clinical } = opts;
+  const geom = new THREE.SphereGeometry(1, 32, 24);
+  const mesh = new THREE.Mesh(geom, material);
+  mesh.position.set(...position);
+  mesh.scale.set(...scale);
+  mesh.rotation.set(...rotation);
+  mesh.castShadow = true; mesh.receiveShadow = true;
+  groups[layer].add(mesh);
+  registerStructure(mesh, { name, latin, info, region, layer, clinical });
+  return mesh;
+}
+
+function longBone(opts) {
+  const { name, latin, info, region, start, end, r1, r2, material = boneMat, clinical } = opts;
+  const a = new THREE.Vector3(...start);
+  const b = new THREE.Vector3(...end);
+  const length = a.distanceTo(b);
+  const geom = new THREE.CylinderGeometry(r1, r2, length, 22, 1);
+  geom.translate(0, length/2 - length/2, 0);
+  const cap1 = new THREE.SphereGeometry(r1, 18, 14);
+  cap1.translate(0, length/2, 0);
+  const cap2 = new THREE.SphereGeometry(r2, 18, 14);
+  cap2.translate(0, -length/2, 0);
+  const mesh = new THREE.Mesh(geom, material);
+  const c1 = new THREE.Mesh(cap1, material);
+  const c2 = new THREE.Mesh(cap2, material);
+  const grp = new THREE.Group();
+  grp.add(mesh); grp.add(c1); grp.add(c2);
+  grp.position.copy(a.clone().lerp(b, 0.5));
+  const dir = b.clone().sub(a).normalize();
+  grp.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), dir);
+  grp.traverse(m => { if (m.isMesh) { m.castShadow = true; m.receiveShadow = true; } });
+  groups.bones.add(grp);
+  registerStructure(grp, { name, latin, info, region, layer: 'bones', clinical });
+  return grp;
+}
+
+function tube(points, radius, material, segments = 64, radialSeg = 8) {
+  const curve = new THREE.CatmullRomCurve3(points.map(p => new THREE.Vector3(...p)));
+  const geom = new THREE.TubeGeometry(curve, segments, radius, radialSeg, false);
+  const mesh = new THREE.Mesh(geom, material);
+  mesh.castShadow = true;
+  return mesh;
+}
+
+longBone({
+  name: 'Tibia',
+  latin: 'Os tibia',
+  region: 'rear',
+  info: 'Hueso medial y principal de la pierna. Su porción distal —el maléolo medial— forma la pared interna de la mortaja tibioperonea ("C" invertida) que aloja la tróclea del astrágalo.',
+  clinical: 'Soporta el ~85% de la carga axial transmitida al pie.',
+  start: [-0.4, 2.6, 0.05], end: [-0.4, 11.5, 0.05],
+  r1: 0.75, r2: 1.0
+});
+
+ellipsoidBone({
+  name: 'Maléolo Medial',
+  latin: 'Malleolus medialis',
+  region: 'rear',
+  info: 'Prominencia ósea distal y medial de la tibia. Junto al maléolo lateral, forma la mortaja que abraza la cúpula del astrágalo. Origen del ligamento deltoideo.',
+  position: [-1.05, 2.2, 0.05],
+  scale: [0.55, 1.15, 0.7]
+});
+
+longBone({
+  name: 'Peroné (Fíbula)',
+  latin: 'Os fibula',
+  region: 'rear',
+  info: 'Hueso lateral y delgado de la pierna. Su porción distal forma el maléolo lateral, pared externa de la mortaja tibioperonea. No es hueso de carga axial principal.',
+  clinical: 'Las fracturas del peroné distal son extremadamente frecuentes en traumatismos por inversión forzada.',
+  start: [1.55, 2.5, -0.2], end: [1.7, 11.3, -0.25],
+  r1: 0.45, r2: 0.55
+});
+
+ellipsoidBone({
+  name: 'Maléolo Lateral',
+  latin: 'Malleolus lateralis',
+  region: 'rear',
+  info: 'Prominencia distal del peroné. Más bajo y más posterior que el maléolo medial. Punto de origen del complejo ligamentoso lateral (LTFA, LCF, LTFP).',
+  position: [1.75, 1.85, -0.25],
+  scale: [0.45, 1.35, 0.55]
+});
+
+ellipsoidBone({
+  name: 'Astrágalo (Talus)',
+  latin: 'Os talus',
+  region: 'rear',
+  info: 'Hueso central del retropié. Su tróclea, más ancha en su parte anterior, encaja en la mortaja durante la dorsiflexión generando la posición de bloqueo (close-packed). No recibe inserciones musculares: todo su movimiento depende de fuerzas pasivas transmitidas.',
+  clinical: 'La fisiología del encaje mecánico explica la máxima estabilidad en dorsiflexión y la vulnerabilidad en flexión plantar.',
+  position: [0.5, 1.35, 0.25],
+  scale: [1.25, 0.85, 1.35]
+});
+
+ellipsoidBone({
+  name: 'Cabeza del Astrágalo',
+  latin: 'Caput tali',
+  region: 'rear',
+  info: 'Proyección anterior del astrágalo que articula con el navicular. Componente clave de la articulación talocalcaneonavicular y del eje de Henke.',
+  position: [0.35, 1.15, 1.25],
+  scale: [0.55, 0.5, 0.55]
+});
+
+ellipsoidBone({
+  name: 'Calcáneo',
+  latin: 'Os calcaneus',
+  region: 'rear',
+  info: 'El mayor hueso del tarso (hueso del talón). Soporta gran parte del peso corporal. Se articula con el astrágalo superiormente (articulación subtalar) y con el cuboides anteriormente. Recibe la inserción del tendón de Aquiles posteriormente.',
+  clinical: 'Pivote principal para los movimientos de inversión / eversión esenciales en la estabilización sobre superficies inclinadas.',
+  position: [0.55, 0.05, -1.05],
+  scale: [1.35, 1.05, 2.05]
+});
+
+ellipsoidBone({
+  name: 'Navicular (Escafoides)',
+  latin: 'Os naviculare',
+  region: 'mid',
+  info: 'Hueso medial del mediopié, en forma de barco. Articula posteriormente con la cabeza del astrágalo y anteriormente con los tres cuneiformes. Forma parte de la articulación de Chopart (mediotarsiana).',
+  position: [-0.15, 1.0, 1.95],
+  scale: [0.55, 0.85, 0.6]
+});
+
+ellipsoidBone({
+  name: 'Cuboides',
+  latin: 'Os cuboideum',
+  region: 'mid',
+  info: 'Hueso cuboideo del borde lateral del mediopié. Articula con el calcáneo posteriormente y con los metatarsianos IV y V anteriormente. Forma parte de la articulación de Chopart.',
+  position: [1.45, 0.7, 1.55],
+  scale: [0.7, 0.75, 0.85]
+});
+
+const cuneiformes = [
+  ['Cuneiforme Medial', 'Os cuneiforme mediale', [-0.2, 0.9, 2.7], [0.5, 0.85, 0.55]],
+  ['Cuneiforme Intermedio', 'Os cuneiforme intermedium', [0.5, 0.95, 2.75], [0.45, 0.75, 0.5]],
+  ['Cuneiforme Lateral', 'Os cuneiforme laterale', [1.1, 0.9, 2.7], [0.5, 0.75, 0.55]],
+];
+cuneiformes.forEach(([n, l, p, s]) => ellipsoidBone({
+  name: n, latin: l, region: 'mid',
+  info: 'Cuneiforme del mediopié. Articula con el navicular posteriormente y con los metatarsianos anteriormente. Junto con el cuboides forma la bóveda transversa del pie.',
+  position: p, scale: s
+}));
+
+const META_LENS = [2.6, 2.85, 2.7, 2.55, 2.35];
+const META_X    = [-0.45, 0.4, 1.05, 1.7, 2.25];
+const META_Y    = [0.85, 0.9, 0.9, 0.85, 0.75];
+const META_Z0   = [3.15, 3.25, 3.20, 3.05, 2.90];
+const ROMAN = ['I', 'II', 'III', 'IV', 'V'];
+
+const metaInfo = {
+  I: 'Hallux (dedo gordo). Soporta hasta 2/3 del peso del antepié durante la propulsión. Articula con sesamoideos plantares.',
+  II: 'El metatarsiano más largo y más estable; pivote del pie durante la marcha. Lugar frecuente de fracturas por estrés.',
+  III: 'Posición central. Junto con el II forma el eje del antepié.',
+  IV: 'Articula con el cuboides. Conserva movilidad sagital relevante.',
+  V: 'Lateral. Su tuberosidad recibe la inserción del peroneo corto; lugar frecuente de fractura por avulsión.'
+};
+
+for (let i = 0; i < 5; i++) {
+  const x = META_X[i];
+  const z0 = META_Z0[i];
+  const len = META_LENS[i];
+  longBone({
+    name: `Metatarsiano ${ROMAN[i]}`,
+    latin: `Os metatarsale ${ROMAN[i]}`,
+    region: 'fore',
+    info: `${metaInfo[ROMAN[i]]} Su base articula con el tarso, su cabeza con la falange proximal formando la articulación metatarsofalángica (eje del antepié).`,
+    start: [x, META_Y[i], z0],
+    end: [x, META_Y[i] - 0.05, z0 + len],
+    r1: 0.22, r2: 0.28
+  });
+}
+
+const PHALANX_LENS = {
+  prox: [0.95, 0.85, 0.78, 0.68, 0.58],
+  med:  [null, 0.55, 0.5, 0.45, 0.36],
+  dist: [0.55, 0.4, 0.4, 0.36, 0.32],
+};
+
+for (let i = 0; i < 5; i++) {
+  let z = META_Z0[i] + META_LENS[i] + 0.18;
+  const segs = i === 0 ? ['prox', 'dist'] : ['prox', 'med', 'dist'];
+  segs.forEach((seg, idx) => {
+    const len = PHALANX_LENS[seg][i];
+    longBone({
+      name: `Falange ${seg === 'prox' ? 'proximal' : seg === 'med' ? 'media' : 'distal'} – dedo ${ROMAN[i]}`,
+      latin: 'Phalanx',
+      region: 'fore',
+      info: `Falange del dedo ${ROMAN[i]}. Participa de las articulaciones interfalángicas y metatarsofalángicas del antepié.`,
+      start: [META_X[i], META_Y[i] - 0.1, z],
+      end: [META_X[i], META_Y[i] - 0.15, z + len],
+      r1: 0.16, r2: 0.18
+    });
+    z += len + 0.12;
+  });
+}
+
+function ligament(name, latin, info, points, radius = 0.16, opts = {}) {
+  const mesh = tube(points, radius, ligamentMat, 28, 10);
+  groups.ligaments.add(mesh);
+  registerStructure(mesh, Object.assign({ name, latin, info, region: opts.region || 'rear', layer: 'ligaments' }, opts));
+  return mesh;
+}
+
+ligament(
+  'Ligamento Talofibular Anterior (LTFA)',
+  'Lig. talofibulare anterius',
+  'Conecta el maléolo lateral con el cuello del astrágalo. Mecánicamente el más débil del complejo lateral y el que sufre la mayor tasa de esguinces en inversión.',
+  [[1.95, 1.85, 0.4], [1.4, 1.55, 0.95], [0.95, 1.4, 1.15]], 0.14,
+  { clinical: 'Responsable del ~70% de los esguinces laterales de tobillo.' }
+);
+
+ligament(
+  'Ligamento Calcaneofibular (LCF)',
+  'Lig. calcaneofibulare',
+  'Banda vertical que estabiliza la articulación subtalar. Une el maléolo lateral con la cara lateral del calcáneo, cruzando ambas articulaciones (talocrural y subtalar).',
+  [[1.85, 1.6, -0.3], [1.5, 0.6, -0.6], [0.95, -0.2, -0.7]], 0.13
+);
+
+ligament(
+  'Ligamento Talofibular Posterior (LTFP)',
+  'Lig. talofibulare posterius',
+  'El más profundo y robusto del complejo lateral. Evita el desplazamiento posterior del astrágalo dentro de la mortaja tibioperonea.',
+  [[1.7, 1.85, -0.85], [1.2, 1.5, -0.75], [0.7, 1.25, -0.55]], 0.17
+);
+
+const deltoidGroup = new THREE.Group();
+const deltStart = [-0.95, 2.0, 0.05];
+[
+  [-0.6, 1.3, 1.1],
+  [-0.4, 0.6, 0.6],
+  [-0.55, 0.4, -0.4],
+  [-0.7, 0.95, -0.95],
+].forEach(end => {
+  const m = tube([deltStart, end], 0.13, ligamentMat, 22, 8);
+  deltoidGroup.add(m);
+});
+groups.ligaments.add(deltoidGroup);
+registerStructure(deltoidGroup, {
+  name: 'Ligamento Deltoideo (Medial)',
+  latin: 'Lig. deltoideum',
+  region: 'rear',
+  layer: 'ligaments',
+  info: 'Estructura masiva en forma de abanico en la cara interna del tobillo. Une el maléolo tibial con astrágalo, calcáneo y navicular. Extremadamente denso y resistente: restringe la eversión con tal eficacia que, ante traumatismos severos, suele resistir y arrancar un fragmento óseo (fractura por avulsión) antes de romperse.',
+  clinical: 'La integridad del ligamento deltoideo determina la estabilidad medial del tobillo y condiciona la indicación quirúrgica en fracturas maleolares.'
+});
+
+ligament(
+  'Ligamento Calcaneonavicular Plantar (Spring)',
+  'Lig. calcaneonaviculare plantare',
+  'Conocido como "ligamento en resorte". Soporta la cabeza del astrágalo desde abajo y es determinante para mantener el arco longitudinal medial del pie.',
+  [[0.4, 0.0, 0.0], [0.0, 0.65, 1.0], [-0.15, 0.85, 1.85]], 0.12,
+  { region: 'mid' }
+);
+
+const achilles = tube([
+  [-0.2, 6.5, -1.8],
+  [-0.1, 4.0, -1.95],
+  [0.1, 2.0, -2.1],
+  [0.4, 0.6, -2.25],
+  [0.55, 0.05, -2.05]
+], 0.32, tendonMat, 48, 12);
+groups.tendons.add(achilles);
+registerStructure(achilles, {
+  name: 'Tendón de Aquiles',
+  latin: 'Tendo calcaneus',
+  region: 'rear',
+  layer: 'tendons',
+  info: 'Tendón terminal del tríceps sural (gastrocnemio + sóleo). Componente Elástico en Serie (CES) del sistema músculo-tendinoso de propulsión plantar. Almacena y libera energía elástica durante el despegue de la marcha.',
+  clinical: 'Su rotura provoca pérdida brusca de la flexión plantar y prueba de Thompson positiva.'
+});
+
+const fascia = tube([
+  [0.45, -0.18, -1.55],
+  [-0.2, -0.22, -0.2],
+  [-0.3, -0.20, 1.4],
+  [-0.3, -0.18, 2.7]
+], 0.16, tendonMat, 60, 10);
+groups.tendons.add(fascia);
+registerStructure(fascia, {
+  name: 'Fascia Plantar',
+  latin: 'Aponeurosis plantaris',
+  region: 'mid',
+  layer: 'tendons',
+  info: 'Banda gruesa de tejido conectivo aponeurótico en la base del pie. Sostiene la bóveda de arcos (longitudinal medial, lateral y transverso). Actúa como mecanismo de cabrestante (windlass) durante el despegue.',
+  clinical: 'Su inflamación crónica origina la fascitis plantar.'
+});
+
+const fasciaBranches = new THREE.Group();
+META_X.forEach((x, i) => {
+  const z0 = META_Z0[i];
+  const m = tube([[-0.3, -0.18, 2.7], [x*0.5 - 0.1, -0.2, z0 - 0.2], [x, -0.18, z0 + 0.2]], 0.07, tendonMat, 24, 6);
+  fasciaBranches.add(m);
+});
+groups.tendons.add(fasciaBranches);
+
+const antTibial = tube([
+  [0.2, 9.5, 1.0],
+  [0.25, 6.0, 1.0],
+  [0.3, 3.5, 1.05],
+  [0.45, 2.0, 1.05]
+], 0.10, arteryMat);
+groups.arteries.add(antTibial);
+registerStructure(antTibial, {
+  name: 'Arteria Tibial Anterior',
+  latin: 'A. tibialis anterior',
+  region: 'rear', layer: 'arteries',
+  info: 'Desciende por el compartimento anterior de la pierna entre tibia y peroné. Cruza anteriormente el tobillo y continúa en el dorso del pie como arteria dorsal del pie.'
+});
+
+const dorsalisPedis = tube([
+  [0.45, 2.0, 1.05],
+  [0.4, 1.15, 1.85],
+  [0.5, 1.0, 2.8],
+  [0.55, 0.95, 3.7]
+], 0.085, arteryMat);
+groups.arteries.add(dorsalisPedis);
+registerStructure(dorsalisPedis, {
+  name: 'Arteria Dorsal del Pie',
+  latin: 'A. dorsalis pedis',
+  region: 'mid', layer: 'arteries',
+  info: 'Continuación de la tibial anterior en el dorso del pie. Su pulso, palpable entre el primer y segundo metatarsiano, es un signo clínico fundamental de perfusión distal.'
+});
+
+const postTib = tube([
+  [-0.3, 8.5, -0.7],
+  [-0.5, 5.5, -0.55],
+  [-0.9, 2.5, -0.15],
+  [-1.0, 1.3, 0.55],
+  [-0.6, 0.45, 1.4]
+], 0.10, arteryMat);
+groups.arteries.add(postTib);
+registerStructure(postTib, {
+  name: 'Arteria Tibial Posterior',
+  latin: 'A. tibialis posterior',
+  region: 'rear', layer: 'arteries',
+  info: 'Discurre por el compartimento posterior profundo de la pierna. Cruza por detrás del maléolo medial dentro del túnel del tarso y se divide en arterias plantares medial y lateral.'
+});
+
+const tibialN = tube([
+  [-0.1, 9.0, -0.8],
+  [-0.35, 6.0, -0.6],
+  [-0.85, 2.4, -0.05],
+  [-0.8, 1.2, 0.7]
+], 0.10, nerveMat);
+groups.nerves.add(tibialN);
+registerStructure(tibialN, {
+  name: 'Nervio Tibial',
+  latin: 'N. tibialis',
+  region: 'rear', layer: 'nerves',
+  info: 'Rama terminal del nervio ciático. Pasa posterior al maléolo medial dentro del túnel del tarso. Inerva los músculos posteriores de la pantorrilla y, distalmente, la planta del pie a través de los nervios plantares medial y lateral.',
+  clinical: 'Su compresión en el túnel del tarso origina el síndrome del túnel tarsiano.'
+});
+
+const supPeroneal = tube([
+  [1.25, 9.0, 0.7],
+  [1.5, 6.0, 1.0],
+  [1.45, 3.0, 1.2],
+  [1.2, 1.6, 1.8],
+  [0.9, 1.0, 2.8]
+], 0.09, nerveMat);
+groups.nerves.add(supPeroneal);
+registerStructure(supPeroneal, {
+  name: 'Nervio Peroneo Superficial',
+  latin: 'N. fibularis superficialis',
+  region: 'rear', layer: 'nerves',
+  info: 'Inerva los músculos peroneos (eversores del pie) y aporta sensibilidad cutánea al dorso del pie, excepto la zona del primer espacio interdigital.'
+});
+
+const deepPeroneal = tube([
+  [0.55, 9.0, 1.0],
+  [0.55, 5.0, 1.05],
+  [0.5, 2.5, 1.15],
+  [0.7, 1.2, 2.0],
+  [0.9, 1.0, 3.0]
+], 0.09, nerveMat);
+groups.nerves.add(deepPeroneal);
+registerStructure(deepPeroneal, {
+  name: 'Nervio Peroneo Profundo',
+  latin: 'N. fibularis profundus',
+  region: 'rear', layer: 'nerves',
+  info: 'Inerva los dorsiflexores del tobillo (tibial anterior, extensor largo de los dedos, extensor largo del hallux). Distalmente, suministra la sensibilidad del primer espacio interdigital del dorso del pie.'
+});
+
+const suralN = tube([
+  [1.05, 8.0, -1.6],
+  [1.25, 5.0, -1.45],
+  [1.5, 2.0, -0.7],
+  [1.55, 1.0, 0.5],
+  [1.8, 0.85, 1.7]
+], 0.10, nerveMat);
+groups.nerves.add(suralN);
+registerStructure(suralN, {
+  name: 'Nervio Sural',
+  latin: 'N. suralis',
+  region: 'rear', layer: 'nerves',
+  info: 'Nervio sensitivo formado por ramas del tibial y del peroneo común. Inerva la región posterolateral de la pierna distal y el borde lateral del pie.'
+});
+
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2(-2, -2);
+let selected = null;
+let hovered = null;
+
+const pickableMeshes = [];
+STRUCTURES.forEach(s => {
+  s.mesh.traverse(c => { if (c.isMesh) pickableMeshes.push(c); });
+});
+
+function findStructureByMesh(mesh) {
+  let m = mesh;
+  while (m) {
+    const found = STRUCTURES.find(s => s.mesh === m);
+    if (found) return found;
+    m = m.parent;
+  }
+  return null;
+}
+
+function setEmissive(structure, color, intensity) {
+  structure.mesh.traverse(child => {
+    if (!child.isMesh) return;
+    const base = originalMats.get(child) || child.material;
+    if (color === null) {
+      child.material = base;
+    } else {
+      const clone = base.clone();
+      clone.emissive = new THREE.Color(color);
+      clone.emissiveIntensity = intensity;
+      child.material = clone;
+    }
+  });
+}
+
+function selectStructure(s) {
+  if (selected && selected !== s) setEmissive(selected, null);
+  selected = s;
+  if (s) {
+    setEmissive(s, 0xff8c2a, 0.45);
+    renderInfo(s);
+    syncList(s);
+  }
+}
+
+const infoEl = document.getElementById('info');
+const LAYER_LABEL = { bones: 'Hueso', ligaments: 'Ligamento', arteries: 'Arteria', nerves: 'Nervio', tendons: 'Tendón / Fascia' };
+const REGION_LABEL = { rear: 'Retropié', mid: 'Mediopié', fore: 'Antepié' };
+
+function renderInfo(s) {
+  let html = `<span class="tag">${LAYER_LABEL[s.layer] || ''}</span>`;
+  html += `<h3>${s.name}</h3>`;
+  if (s.latin) html += `<p class="latin">${s.latin}</p>`;
+  html += `<div class="body"><p>${s.info}</p></div>`;
+  html += `<div class="meta">`;
+  if (s.region) html += `<div><strong>Región:</strong> ${REGION_LABEL[s.region] || s.region}</div>`;
+  if (s.clinical) html += `<div style="margin-top:6px"><strong>Relevancia clínica:</strong> ${s.clinical}</div>`;
+  html += `</div>`;
+  infoEl.innerHTML = html;
+}
+
+const listEl = document.getElementById('structList');
+function buildList(filter = '') {
+  const f = filter.trim().toLowerCase();
+  listEl.innerHTML = '';
+  const layerOrder = { bones: 0, ligaments: 1, tendons: 2, arteries: 3, nerves: 4 };
+  const colorOf = { bones: '#f0e3c8', ligaments: '#c9b3d9', arteries: '#b1262b', nerves: '#f3d24a', tendons: '#d6b27a' };
+  const list = STRUCTURES
+    .filter(s => !f || s.name.toLowerCase().includes(f) || (s.latin && s.latin.toLowerCase().includes(f)))
+    .sort((a, b) => (layerOrder[a.layer] - layerOrder[b.layer]) || a.name.localeCompare(b.name, 'es'));
+  list.forEach(s => {
+    const li = document.createElement('li');
+    li.dataset.ref = s.name;
+    li.innerHTML = `<span class="ic" style="background:${colorOf[s.layer]}"></span>${s.name}`;
+    li.addEventListener('click', () => {
+      selectStructure(s);
+      focusOnStructure(s);
+    });
+    listEl.appendChild(li);
+  });
+}
+buildList();
+
+function syncList(s) {
+  [...listEl.querySelectorAll('li')].forEach(li => li.classList.toggle('active', li.dataset.ref === s.name));
+}
+
+document.getElementById('search').addEventListener('input', e => buildList(e.target.value));
+
+document.querySelectorAll('.toggle[data-layer]').forEach(t => {
+  t.addEventListener('change', () => {
+    const layer = t.dataset.layer;
+    if (layer === 'labels') {
+      labelsLayer.style.display = t.checked ? 'block' : 'none';
+      return;
+    }
+    groups[layer].visible = t.checked;
+  });
+});
+
+document.querySelectorAll('.toggle[data-region]').forEach(t => {
+  t.addEventListener('change', () => {
+    const r = t.dataset.region;
+    STRUCTURES.forEach(s => {
+      if (s.region === r) s.mesh.visible = t.checked;
+    });
+  });
+});
+
+const views = {
+  anterior:  { pos: [1.2, 4, 22], target: [1.2, 4, 0.5] },
+  posterior: { pos: [1.2, 4, -22], target: [1.2, 4, 0.5] },
+  lateral:   { pos: [22, 3, 1], target: [1.2, 2, 0.5] },
+  medial:    { pos: [-22, 3, 1], target: [1.2, 2, 0.5] },
+  superior:  { pos: [1.2, 22, 1], target: [1.2, 0.5, 1] },
+  plantar:   { pos: [1.2, -22, 1], target: [1.2, 0.5, 1] },
+};
+
+function animateCamera(to) {
+  const fromPos = camera.position.clone();
+  const fromTarget = controls.target.clone();
+  const targetPos = new THREE.Vector3(...to.pos);
+  const targetTar = new THREE.Vector3(...to.target);
+  const t0 = performance.now();
+  const dur = 750;
+  function step(t) {
+    const k = Math.min(1, (t - t0) / dur);
+    const e = k < 0.5 ? 2*k*k : 1 - Math.pow(-2*k + 2, 2)/2;
+    camera.position.lerpVectors(fromPos, targetPos, e);
+    controls.target.lerpVectors(fromTarget, targetTar, e);
+    if (k < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+document.querySelectorAll('.view-btn').forEach(b => {
+  b.addEventListener('click', () => animateCamera(views[b.dataset.view]));
+});
+
+function focusOnStructure(s) {
+  const box = new THREE.Box3().setFromObject(s.mesh);
+  const center = box.getCenter(new THREE.Vector3());
+  const size = box.getSize(new THREE.Vector3()).length();
+  const dist = Math.max(7, size * 3.4);
+  const offset = camera.position.clone().sub(controls.target).normalize().multiplyScalar(dist);
+  animateCamera({ pos: [center.x + offset.x, center.y + offset.y, center.z + offset.z], target: [center.x, center.y, center.z] });
+}
+
+let exploded = false;
+const originPos = new Map();
+function toggleExplode() {
+  exploded = !exploded;
+  STRUCTURES.forEach(s => {
+    if (!originPos.has(s.mesh)) originPos.set(s.mesh, s.mesh.position.clone());
+    const orig = originPos.get(s.mesh);
+    const center = new THREE.Vector3(1.0, 1.2, 0.5);
+    const dir = orig.clone().sub(center);
+    if (dir.lengthSq() < 0.001) dir.set(0, 1, 0);
+    dir.normalize();
+    const target = exploded
+      ? orig.clone().add(dir.multiplyScalar(2.4))
+      : orig.clone();
+    animatePosition(s.mesh, target);
+  });
+}
+function animatePosition(mesh, target) {
+  const from = mesh.position.clone();
+  const t0 = performance.now();
+  const dur = 620;
+  function step(t) {
+    const k = Math.min(1, (t - t0) / dur);
+    const e = k < 0.5 ? 2*k*k : 1 - Math.pow(-2*k + 2, 2)/2;
+    mesh.position.lerpVectors(from, target, e);
+    if (k < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+document.querySelectorAll('.tool').forEach(b => {
+  b.addEventListener('click', () => {
+    if (b.dataset.mode) {
+      document.querySelectorAll('.tool[data-mode]').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      controls.enableRotate = b.dataset.mode === 'rotate';
+      controls.enablePan = b.dataset.mode === 'pan';
+    }
+    if (b.dataset.action === 'reset') {
+      animateCamera({ pos: DEFAULT_CAM.toArray(), target: DEFAULT_TARGET.toArray() });
+      if (selected) { setEmissive(selected, null); selected = null; }
+      [...listEl.querySelectorAll('li')].forEach(li => li.classList.remove('active'));
+      renderInfo({ name: '', latin: '', info: 'Selecciona una estructura del modelo o de la lista para ver su descripción morfofisiológica.', layer: '', region: '' });
+      infoEl.innerHTML = `<p class="muted">Selecciona una estructura del modelo o de la lista para ver su descripción morfofisiológica.</p>`;
+    }
+    if (b.dataset.action === 'explode') toggleExplode();
+    if (b.dataset.action === 'screenshot') {
+      const link = document.createElement('a');
+      link.download = 'pie-tobillo-3d.png';
+      link.href = renderer.domElement.toDataURL('image/png');
+      link.click();
+    }
+  });
+});
+
+const PIN_STRUCTURES = [
+  ['Tibia', 'bone'],
+  ['Peroné (Fíbula)', 'bone'],
+  ['Astrágalo (Talus)', 'bone'],
+  ['Calcáneo', 'bone'],
+  ['Navicular (Escafoides)', 'bone'],
+  ['Cuboides', 'bone'],
+  ['Metatarsiano I', 'bone'],
+  ['Metatarsiano V', 'bone'],
+  ['Tendón de Aquiles', 'tendon'],
+  ['Fascia Plantar', 'tendon'],
+  ['Ligamento Talofibular Anterior (LTFA)', 'ligament'],
+  ['Ligamento Deltoideo (Medial)', 'ligament'],
+  ['Arteria Dorsal del Pie', 'artery'],
+  ['Arteria Tibial Posterior', 'artery'],
+  ['Nervio Tibial', 'nerve'],
+  ['Nervio Peroneo Superficial', 'nerve'],
+  ['Nervio Peroneo Profundo', 'nerve'],
+  ['Nervio Sural', 'nerve'],
+];
+
+const pins = [];
+PIN_STRUCTURES.forEach(([name, kind]) => {
+  const s = STRUCTURES.find(x => x.name === name);
+  if (!s) return;
+  const el = document.createElement('div');
+  el.className = `label3d kind-${kind}`;
+  el.textContent = name;
+  el.addEventListener('click', e => {
+    e.stopPropagation();
+    selectStructure(s);
+    focusOnStructure(s);
+  });
+  labelsLayer.appendChild(el);
+  pins.push({ el, struct: s });
+});
+
+function isVisibleChain(o) {
+  while (o) { if (!o.visible) return false; o = o.parent; }
+  return true;
+}
+
+function updatePins() {
+  const r = renderer.domElement.getBoundingClientRect();
+  pins.forEach(({ el, struct }) => {
+    if (!isVisibleChain(struct.mesh)) { el.style.display = 'none'; return; }
+    const p = new THREE.Vector3();
+    struct.mesh.getWorldPosition(p);
+    p.project(camera);
+    if (p.z > 1 || p.z < -1) { el.style.display = 'none'; return; }
+    if (Math.abs(p.x) > 1.2 || Math.abs(p.y) > 1.2) { el.style.display = 'none'; return; }
+    el.style.display = 'block';
+    el.style.left = ((p.x * 0.5 + 0.5) * r.width) + 'px';
+    el.style.top = ((-p.y * 0.5 + 0.5) * r.height) + 'px';
+  });
+}
+
+renderer.domElement.addEventListener('pointermove', e => {
+  const r = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((e.clientX - r.left) / r.width) * 2 - 1;
+  mouse.y = -((e.clientY - r.top) / r.height) * 2 + 1;
+});
+
+renderer.domElement.addEventListener('click', () => {
+  raycaster.setFromCamera(mouse, camera);
+  const hits = raycaster.intersectObjects(pickableMeshes.filter(m => isVisibleChain(m)), false);
+  if (hits.length > 0) {
+    const s = findStructureByMesh(hits[0].object);
+    if (s) selectStructure(s);
+  } else {
+    if (selected) { setEmissive(selected, null); selected = null; }
+    [...listEl.querySelectorAll('li')].forEach(li => li.classList.remove('active'));
+  }
+});
+
+renderer.domElement.addEventListener('pointerleave', () => {
+  mouse.set(-2, -2);
+});
+
+function updateHover() {
+  raycaster.setFromCamera(mouse, camera);
+  const hits = raycaster.intersectObjects(pickableMeshes.filter(m => isVisibleChain(m)), false);
+  const s = hits.length ? findStructureByMesh(hits[0].object) : null;
+  if (s !== hovered) {
+    if (hovered && hovered !== selected) setEmissive(hovered, null);
+    hovered = s;
+    if (hovered && hovered !== selected) setEmissive(hovered, 0xffd28a, 0.18);
+    renderer.domElement.style.cursor = s ? 'pointer' : '';
+  }
+}
+
+window.addEventListener('resize', () => {
+  camera.aspect = viewer.clientWidth / viewer.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(viewer.clientWidth, viewer.clientHeight);
+});
+
+function frame() {
+  controls.update();
+  updateHover();
+  updatePins();
+  renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+frame();
+</script>
+</body>
+</html>
