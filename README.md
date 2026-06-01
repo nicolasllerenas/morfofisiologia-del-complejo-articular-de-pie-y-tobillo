@@ -7,7 +7,6 @@ Es un visor 3D del pie y el tobillo, inspirado en el modelo del Manual MSD y arm
 ## Qué hay en la carpeta
 
 - `index.html` — el visor 3D.
-- `Brown Vintage Illustrated Anatomy  Group Project Presentation.pdf` — la presentación que usé como referencia.
 
 ## Cómo abrirlo
 
@@ -17,12 +16,6 @@ Es un visor 3D del pie y el tobillo, inspirado en el modelo del Manual MSD y arm
 2. Descomprimes.
 3. Doble clic a `index.html` y se abre en el navegador. Ya.
 
-### Si lo quieres ver en línea desde el celular o donde sea
-
-1. En el repo, entra a **Settings**.
-2. En el menú de la izquierda, **Pages**.
-3. En *Branch* elige `main` y carpeta `/ (root)`. Guardas.
-4. Espera 1 o 2 minutos y GitHub te da un link público para abrirlo desde cualquier lado.
 
 ## Qué se ve
 
@@ -44,7 +37,3 @@ Huesos, ligamentos, tendones, arterias y nervios del pie y tobillo:
 - Toggles para prender/apagar capas (solo huesos, solo nervios, etc.) o para ver una región (retropié, mediopié, antepié).
 - Botones de vista: anterior, posterior, lateral, medial, dorsal y plantar.
 - Botón de cámara para guardar una captura.
-
-## Nota
-
-Usa [Three.js](https://threejs.org/) desde un CDN, así que necesita internet la primera vez que se abre.
