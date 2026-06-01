@@ -21,6 +21,7 @@
   --ligament: #c9b3d9;
   --tendon: #d6b27a;
 }
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; overflow: hidden; font-family: 'Cormorant Garamond', serif; color: var(--ink); }
 body {
@@ -199,7 +200,7 @@ h2.section {
     <p class="subtitle">Modelo 3D Interactivo</p>
 
     <div class="intro-card">
-      Sistema multiarticular de <strong>26 huesos</strong> y más de <strong>30 articulaciones</strong>, diseñado para alternar entre estructura flexible (adaptación al terreno) y palanca rígida (propulsión en marcha).
+El pie y el tobillo tienen <strong>26 huesos</strong> y más de <strong>30 articulaciones</strong>. Pueden ser flexibles para adaptarse al suelo y rígidos para impulsarse al caminar.
     </div>
 
     <h2 class="section">Capas</h2>
@@ -283,7 +284,7 @@ h2.section {
   <aside class="panel" id="right">
     <h1 class="title">Información Anatómica</h1>
     <div id="info">
-      <p class="muted">Selecciona una estructura del modelo o de la lista para ver su descripción morfofisiológica.</p>
+      <p class="muted">Haz clic en una estructura del modelo o de la lista para ver su información.</p>
       <div class="intro-card" style="margin-top:14px">
         <strong>Controles</strong><br/>
         · Clic + arrastrar: rotar<br/>
@@ -441,8 +442,8 @@ longBone({
   name: 'Tibia',
   latin: 'Os tibia',
   region: 'rear',
-  info: 'Hueso medial y principal de la pierna. Su porción distal —el maléolo medial— forma la pared interna de la mortaja tibioperonea ("C" invertida) que aloja la tróclea del astrágalo.',
-  clinical: 'Soporta el ~85% de la carga axial transmitida al pie.',
+  info: 'Hueso principal de la pierna. Su extremo distal forma el maléolo medial, parte de la mortaja que aloja al astrágalo.',
+  clinical: 'Soporta casi toda la carga que baja hacia el pie.',
   start: [-0.4, 2.6, 0.05], end: [-0.4, 11.5, 0.05],
   r1: 0.75, r2: 1.0
 });
@@ -451,7 +452,7 @@ ellipsoidBone({
   name: 'Maléolo Medial',
   latin: 'Malleolus medialis',
   region: 'rear',
-  info: 'Prominencia ósea distal y medial de la tibia. Junto al maléolo lateral, forma la mortaja que abraza la cúpula del astrágalo. Origen del ligamento deltoideo.',
+  info: 'Saliente interno del tobillo, en el extremo de la tibia. Da origen al ligamento deltoideo.',
   position: [-1.05, 2.2, 0.05],
   scale: [0.55, 1.15, 0.7]
 });
@@ -460,8 +461,8 @@ longBone({
   name: 'Peroné (Fíbula)',
   latin: 'Os fibula',
   region: 'rear',
-  info: 'Hueso lateral y delgado de la pierna. Su porción distal forma el maléolo lateral, pared externa de la mortaja tibioperonea. No es hueso de carga axial principal.',
-  clinical: 'Las fracturas del peroné distal son extremadamente frecuentes en traumatismos por inversión forzada.',
+  info: 'Hueso lateral y delgado de la pierna. Su extremo forma el maléolo lateral. Casi no soporta carga.',
+  clinical: 'Se fractura con frecuencia en los esguinces por inversión.',
   start: [1.55, 2.5, -0.2], end: [1.7, 11.3, -0.25],
   r1: 0.45, r2: 0.55
 });
@@ -470,7 +471,7 @@ ellipsoidBone({
   name: 'Maléolo Lateral',
   latin: 'Malleolus lateralis',
   region: 'rear',
-  info: 'Prominencia distal del peroné. Más bajo y más posterior que el maléolo medial. Punto de origen del complejo ligamentoso lateral (LTFA, LCF, LTFP).',
+  info: 'Saliente externo del tobillo, en el extremo del peroné. Da origen a los ligamentos laterales (LTFA, LCF, LTFP).',
   position: [1.75, 1.85, -0.25],
   scale: [0.45, 1.35, 0.55]
 });
@@ -479,8 +480,8 @@ ellipsoidBone({
   name: 'Astrágalo (Talus)',
   latin: 'Os talus',
   region: 'rear',
-  info: 'Hueso central del retropié. Su tróclea, más ancha en su parte anterior, encaja en la mortaja durante la dorsiflexión generando la posición de bloqueo (close-packed). No recibe inserciones musculares: todo su movimiento depende de fuerzas pasivas transmitidas.',
-  clinical: 'La fisiología del encaje mecánico explica la máxima estabilidad en dorsiflexión y la vulnerabilidad en flexión plantar.',
+  info: 'Hueso central del retropié. Encaja en la mortaja y bloquea el tobillo en dorsiflexión. No tiene músculos insertados.',
+  clinical: 'El tobillo es más estable en dorsiflexión y más inestable en flexión plantar.',
   position: [0.5, 1.35, 0.25],
   scale: [1.25, 0.85, 1.35]
 });
@@ -489,7 +490,7 @@ ellipsoidBone({
   name: 'Cabeza del Astrágalo',
   latin: 'Caput tali',
   region: 'rear',
-  info: 'Proyección anterior del astrágalo que articula con el navicular. Componente clave de la articulación talocalcaneonavicular y del eje de Henke.',
+  info: 'Parte delantera del astrágalo que se articula con el navicular.',
   position: [0.35, 1.15, 1.25],
   scale: [0.55, 0.5, 0.55]
 });
@@ -498,8 +499,8 @@ ellipsoidBone({
   name: 'Calcáneo',
   latin: 'Os calcaneus',
   region: 'rear',
-  info: 'El mayor hueso del tarso (hueso del talón). Soporta gran parte del peso corporal. Se articula con el astrágalo superiormente (articulación subtalar) y con el cuboides anteriormente. Recibe la inserción del tendón de Aquiles posteriormente.',
-  clinical: 'Pivote principal para los movimientos de inversión / eversión esenciales en la estabilización sobre superficies inclinadas.',
+  info: 'El hueso del talón, el más grande del pie. Recibe el tendón de Aquiles por detrás y soporta gran parte del peso.',
+  clinical: 'Es el eje de los movimientos de inversión y eversión del pie.',
   position: [0.55, 0.05, -1.05],
   scale: [1.35, 1.05, 2.05]
 });
@@ -508,7 +509,7 @@ ellipsoidBone({
   name: 'Navicular (Escafoides)',
   latin: 'Os naviculare',
   region: 'mid',
-  info: 'Hueso medial del mediopié, en forma de barco. Articula posteriormente con la cabeza del astrágalo y anteriormente con los tres cuneiformes. Forma parte de la articulación de Chopart (mediotarsiana).',
+  info: 'Hueso del mediopié con forma de barco. Conecta el astrágalo con los cuneiformes. Forma parte de la articulación de Chopart.',
   position: [-0.15, 1.0, 1.95],
   scale: [0.55, 0.85, 0.6]
 });
@@ -517,7 +518,7 @@ ellipsoidBone({
   name: 'Cuboides',
   latin: 'Os cuboideum',
   region: 'mid',
-  info: 'Hueso cuboideo del borde lateral del mediopié. Articula con el calcáneo posteriormente y con los metatarsianos IV y V anteriormente. Forma parte de la articulación de Chopart.',
+  info: 'Hueso del borde externo del mediopié. Une el calcáneo con los metatarsianos IV y V. Forma parte de la articulación de Chopart.',
   position: [1.45, 0.7, 1.55],
   scale: [0.7, 0.75, 0.85]
 });
@@ -529,7 +530,7 @@ const cuneiformes = [
 ];
 cuneiformes.forEach(([n, l, p, s]) => ellipsoidBone({
   name: n, latin: l, region: 'mid',
-  info: 'Cuneiforme del mediopié. Articula con el navicular posteriormente y con los metatarsianos anteriormente. Junto con el cuboides forma la bóveda transversa del pie.',
+  info: 'Hueso en forma de cuña del mediopié. Une el navicular con los metatarsianos y ayuda a formar el arco transverso.',
   position: p, scale: s
 }));
 
@@ -540,11 +541,11 @@ const META_Z0   = [3.15, 3.25, 3.20, 3.05, 2.90];
 const ROMAN = ['I', 'II', 'III', 'IV', 'V'];
 
 const metaInfo = {
-  I: 'Hallux (dedo gordo). Soporta hasta 2/3 del peso del antepié durante la propulsión. Articula con sesamoideos plantares.',
-  II: 'El metatarsiano más largo y más estable; pivote del pie durante la marcha. Lugar frecuente de fracturas por estrés.',
-  III: 'Posición central. Junto con el II forma el eje del antepié.',
-  IV: 'Articula con el cuboides. Conserva movilidad sagital relevante.',
-  V: 'Lateral. Su tuberosidad recibe la inserción del peroneo corto; lugar frecuente de fractura por avulsión.'
+  I: 'El del dedo gordo. Soporta gran parte del peso al impulsarse.',
+  II: 'El más largo y estable; sirve de eje del pie al caminar.',
+  III: 'Central. Junto con el II marca el eje del antepié.',
+  IV: 'Se une al cuboides y conserva algo de movilidad.',
+  V: 'El externo. Su base recibe al peroneo corto y se fractura con facilidad.'
 };
 
 for (let i = 0; i < 5; i++) {
@@ -555,7 +556,7 @@ for (let i = 0; i < 5; i++) {
     name: `Metatarsiano ${ROMAN[i]}`,
     latin: `Os metatarsale ${ROMAN[i]}`,
     region: 'fore',
-    info: `${metaInfo[ROMAN[i]]} Su base articula con el tarso, su cabeza con la falange proximal formando la articulación metatarsofalángica (eje del antepié).`,
+    info: `${metaInfo[ROMAN[i]]} Une el tarso con la falange del dedo.`,
     start: [x, META_Y[i], z0],
     end: [x, META_Y[i] - 0.05, z0 + len],
     r1: 0.22, r2: 0.28
@@ -577,7 +578,7 @@ for (let i = 0; i < 5; i++) {
       name: `Falange ${seg === 'prox' ? 'proximal' : seg === 'med' ? 'media' : 'distal'} – dedo ${ROMAN[i]}`,
       latin: 'Phalanx',
       region: 'fore',
-      info: `Falange del dedo ${ROMAN[i]}. Participa de las articulaciones interfalángicas y metatarsofalángicas del antepié.`,
+      info: `Hueso del dedo ${ROMAN[i]}.`,
       start: [META_X[i], META_Y[i] - 0.1, z],
       end: [META_X[i], META_Y[i] - 0.15, z + len],
       r1: 0.16, r2: 0.18
@@ -596,22 +597,22 @@ function ligament(name, latin, info, points, radius = 0.16, opts = {}) {
 ligament(
   'Ligamento Talofibular Anterior (LTFA)',
   'Lig. talofibulare anterius',
-  'Conecta el maléolo lateral con el cuello del astrágalo. Mecánicamente el más débil del complejo lateral y el que sufre la mayor tasa de esguinces en inversión.',
+  'Une el maléolo lateral con el cuello del astrágalo. Es el ligamento más débil del tobillo.',
   [[1.95, 1.85, 0.4], [1.4, 1.55, 0.95], [0.95, 1.4, 1.15]], 0.14,
-  { clinical: 'Responsable del ~70% de los esguinces laterales de tobillo.' }
+  { clinical: 'Es el que más se lesiona en los esguinces de tobillo.' }
 );
 
 ligament(
   'Ligamento Calcaneofibular (LCF)',
   'Lig. calcaneofibulare',
-  'Banda vertical que estabiliza la articulación subtalar. Une el maléolo lateral con la cara lateral del calcáneo, cruzando ambas articulaciones (talocrural y subtalar).',
+  'Banda vertical que une el maléolo lateral con el calcáneo y estabiliza la articulación subtalar.',
   [[1.85, 1.6, -0.3], [1.5, 0.6, -0.6], [0.95, -0.2, -0.7]], 0.13
 );
 
 ligament(
   'Ligamento Talofibular Posterior (LTFP)',
   'Lig. talofibulare posterius',
-  'El más profundo y robusto del complejo lateral. Evita el desplazamiento posterior del astrágalo dentro de la mortaja tibioperonea.',
+  'El más fuerte de los laterales. Evita que el astrágalo se desplace hacia atrás.',
   [[1.7, 1.85, -0.85], [1.2, 1.5, -0.75], [0.7, 1.25, -0.55]], 0.17
 );
 
@@ -632,14 +633,14 @@ registerStructure(deltoidGroup, {
   latin: 'Lig. deltoideum',
   region: 'rear',
   layer: 'ligaments',
-  info: 'Estructura masiva en forma de abanico en la cara interna del tobillo. Une el maléolo tibial con astrágalo, calcáneo y navicular. Extremadamente denso y resistente: restringe la eversión con tal eficacia que, ante traumatismos severos, suele resistir y arrancar un fragmento óseo (fractura por avulsión) antes de romperse.',
-  clinical: 'La integridad del ligamento deltoideo determina la estabilidad medial del tobillo y condiciona la indicación quirúrgica en fracturas maleolares.'
+  info: 'Ligamento ancho en forma de abanico en la cara interna del tobillo. Es muy resistente y frena la eversión del pie. A veces es tan fuerte que arranca un trozo de hueso antes de romperse.',
+  clinical: 'Es clave para la estabilidad del lado interno del tobillo.'
 });
 
 ligament(
   'Ligamento Calcaneonavicular Plantar (Spring)',
   'Lig. calcaneonaviculare plantare',
-  'Conocido como "ligamento en resorte". Soporta la cabeza del astrágalo desde abajo y es determinante para mantener el arco longitudinal medial del pie.',
+  'Llamado "ligamento en resorte". Sostiene la cabeza del astrágalo por debajo y mantiene el arco interno del pie.',
   [[0.4, 0.0, 0.0], [0.0, 0.65, 1.0], [-0.15, 0.85, 1.85]], 0.12,
   { region: 'mid' }
 );
@@ -657,8 +658,8 @@ registerStructure(achilles, {
   latin: 'Tendo calcaneus',
   region: 'rear',
   layer: 'tendons',
-  info: 'Tendón terminal del tríceps sural (gastrocnemio + sóleo). Componente Elástico en Serie (CES) del sistema músculo-tendinoso de propulsión plantar. Almacena y libera energía elástica durante el despegue de la marcha.',
-  clinical: 'Su rotura provoca pérdida brusca de la flexión plantar y prueba de Thompson positiva.'
+  info: 'Une los gemelos y el sóleo al talón. Almacena y suelta energía como un resorte al impulsarse para caminar.',
+  clinical: 'Si se rompe, se pierde de golpe la flexión plantar del pie.'
 });
 
 const fascia = tube([
@@ -673,8 +674,8 @@ registerStructure(fascia, {
   latin: 'Aponeurosis plantaris',
   region: 'mid',
   layer: 'tendons',
-  info: 'Banda gruesa de tejido conectivo aponeurótico en la base del pie. Sostiene la bóveda de arcos (longitudinal medial, lateral y transverso). Actúa como mecanismo de cabrestante (windlass) durante el despegue.',
-  clinical: 'Su inflamación crónica origina la fascitis plantar.'
+  info: 'Banda gruesa en la planta del pie que sostiene los arcos y tensa el pie al impulsarse.',
+  clinical: 'Cuando se inflama causa la fascitis plantar.'
 });
 
 const fasciaBranches = new THREE.Group();
@@ -696,7 +697,7 @@ registerStructure(antTibial, {
   name: 'Arteria Tibial Anterior',
   latin: 'A. tibialis anterior',
   region: 'rear', layer: 'arteries',
-  info: 'Desciende por el compartimento anterior de la pierna entre tibia y peroné. Cruza anteriormente el tobillo y continúa en el dorso del pie como arteria dorsal del pie.'
+  info: 'Baja por la parte delantera de la pierna y cruza el tobillo para continuar en el dorso del pie.'
 });
 
 const dorsalisPedis = tube([
@@ -710,7 +711,7 @@ registerStructure(dorsalisPedis, {
   name: 'Arteria Dorsal del Pie',
   latin: 'A. dorsalis pedis',
   region: 'mid', layer: 'arteries',
-  info: 'Continuación de la tibial anterior en el dorso del pie. Su pulso, palpable entre el primer y segundo metatarsiano, es un signo clínico fundamental de perfusión distal.'
+  info: 'Recorre el dorso del pie. Su pulso se palpa entre el primer y segundo dedo y sirve para revisar la circulación.'
 });
 
 const postTib = tube([
@@ -725,7 +726,7 @@ registerStructure(postTib, {
   name: 'Arteria Tibial Posterior',
   latin: 'A. tibialis posterior',
   region: 'rear', layer: 'arteries',
-  info: 'Discurre por el compartimento posterior profundo de la pierna. Cruza por detrás del maléolo medial dentro del túnel del tarso y se divide en arterias plantares medial y lateral.'
+  info: 'Baja por detrás de la pierna, pasa tras el maléolo medial y lleva sangre a la planta del pie.'
 });
 
 const tibialN = tube([
@@ -739,8 +740,8 @@ registerStructure(tibialN, {
   name: 'Nervio Tibial',
   latin: 'N. tibialis',
   region: 'rear', layer: 'nerves',
-  info: 'Rama terminal del nervio ciático. Pasa posterior al maléolo medial dentro del túnel del tarso. Inerva los músculos posteriores de la pantorrilla y, distalmente, la planta del pie a través de los nervios plantares medial y lateral.',
-  clinical: 'Su compresión en el túnel del tarso origina el síndrome del túnel tarsiano.'
+  info: 'Pasa por detrás del maléolo medial y da sensibilidad y movimiento a la planta del pie.',
+  clinical: 'Si se comprime causa el síndrome del túnel del tarso.'
 });
 
 const supPeroneal = tube([
@@ -755,7 +756,7 @@ registerStructure(supPeroneal, {
   name: 'Nervio Peroneo Superficial',
   latin: 'N. fibularis superficialis',
   region: 'rear', layer: 'nerves',
-  info: 'Inerva los músculos peroneos (eversores del pie) y aporta sensibilidad cutánea al dorso del pie, excepto la zona del primer espacio interdigital.'
+  info: 'Mueve los músculos que giran el pie hacia afuera y da sensibilidad a casi todo el dorso del pie.'
 });
 
 const deepPeroneal = tube([
@@ -770,7 +771,7 @@ registerStructure(deepPeroneal, {
   name: 'Nervio Peroneo Profundo',
   latin: 'N. fibularis profundus',
   region: 'rear', layer: 'nerves',
-  info: 'Inerva los dorsiflexores del tobillo (tibial anterior, extensor largo de los dedos, extensor largo del hallux). Distalmente, suministra la sensibilidad del primer espacio interdigital del dorso del pie.'
+  info: 'Mueve los músculos que levantan el pie y los dedos. Da sensibilidad entre el primer y segundo dedo.'
 });
 
 const suralN = tube([
@@ -785,7 +786,7 @@ registerStructure(suralN, {
   name: 'Nervio Sural',
   latin: 'N. suralis',
   region: 'rear', layer: 'nerves',
-  info: 'Nervio sensitivo formado por ramas del tibial y del peroneo común. Inerva la región posterolateral de la pierna distal y el borde lateral del pie.'
+  info: 'Nervio que solo da sensibilidad a la parte de atrás y al borde externo del pie.'
 });
 
 const raycaster = new THREE.Raycaster();
@@ -978,8 +979,8 @@ document.querySelectorAll('.tool').forEach(b => {
       animateCamera({ pos: DEFAULT_CAM.toArray(), target: DEFAULT_TARGET.toArray() });
       if (selected) { setEmissive(selected, null); selected = null; }
       [...listEl.querySelectorAll('li')].forEach(li => li.classList.remove('active'));
-      renderInfo({ name: '', latin: '', info: 'Selecciona una estructura del modelo o de la lista para ver su descripción morfofisiológica.', layer: '', region: '' });
-      infoEl.innerHTML = `<p class="muted">Selecciona una estructura del modelo o de la lista para ver su descripción morfofisiológica.</p>`;
+      renderInfo({ name: '', latin: '', info: 'Haz clic en una estructura del modelo o de la lista para ver su información.', layer: '', region: '' });
+      infoEl.innerHTML = `<p class="muted">Haz clic en una estructura del modelo o de la lista para ver su información.</p>`;
     }
     if (b.dataset.action === 'explode') toggleExplode();
     if (b.dataset.action === 'screenshot') {
@@ -1099,3 +1100,4 @@ frame();
 </script>
 </body>
 </html>
+
